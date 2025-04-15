@@ -1,0 +1,59 @@
+<.h3>Listing <%= schema.human_plural %></.h3>
+
+<.modal :if={@live_action in [:new, :edit]} id="<%= schema.singular %>-modal">
+  <.live_component
+    module={<%= inspect context.web_module %>.<%= inspect Module.concat(schema.web_namespace, schema.alias) %>Live.FormComponent}
+    id={@<%= schema.singular %>.id || :new}
+    title={@page_title}
+    action={@live_action}
+    <%= schema.singular %>={@<%= schema.singular %>}
+    return_to={~p"<%= schema.route_prefix %>"}
+  />
+</.modal>
+
+<div class="m-4 p-4">
+  <span class="flex justify-end">
+    <.button
+      class="m-4"
+      color="light"
+      variant="shadow"
+      size="xs"
+      link_type="live_patch"
+      to={~p"<%= schema.route_prefix %>/new"}
+      label="+"
+    />
+  </span>
+
+  <.table
+    id="<%= schema.plural %>"
+    row_id={&("row_#{&1}")}
+    rows={@streams.<%= schema.collection %>}><%= for {k, _} <- schema.attrs do %>
+    <:col :let={<%= schema.singular %>} label="<%= Phoenix.Naming.humanize(Atom.to_string(k)) %>">{<%= schema.singular %>.<%= k %>}</:col><% end %>
+    <:col :let={<%= schema.singular %>} label="Actions">
+      <div>
+        <.button
+          size="xs"
+          link_type="live_redirect"
+          to={~p"<%= schema.route_prefix %>/#{<%= schema.singular %>}"}
+          label="Show"
+        />
+        <.button
+          size="xs"
+          link_type="live_patch"
+          to={~p"<%= schema.route_prefix %>/#{<%= schema.singular %>}/edit"}
+          label="Edit"
+        />
+        <.button
+          size="xs"
+          link_type="a"
+          to="#"
+          phx-click="delete"
+          phx-value-id={<%= schema.singular %>.id}
+          data-confirm="Are you sure?"
+          label="Delete"
+          color="danger"
+        />
+      </div>
+    </:col>
+  </.table>
+</div>

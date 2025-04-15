@@ -1,0 +1,30 @@
+<.h3>Show <%= schema.singular %></.h3>
+
+<.modal :if={@live_action == :edit} id="<%= schema.singular %>-modal">
+  <.live_component
+    module={<%= inspect context.web_module %>.<%= inspect Module.concat(schema.web_namespace, schema.alias) %>Live.FormComponent}
+    id={@<%= schema.singular %>.id}
+    title={@page_title}
+    action={@live_action}
+    <%= schema.singular %>={@<%= schema.singular %>}
+    return_to={~p"<%= schema.route_prefix %>/#{@<%= schema.singular %>.id}"}
+  />
+</.modal>
+
+
+<ul>
+<%= for {k, _} <- schema.attrs do %>
+  <li>
+    <strong><%= Phoenix.Naming.humanize(Atom.to_string(k)) %>:</strong>
+    <%%= @<%= schema.singular %>.<%= k %> %>
+  </li>
+<% end %>
+</ul>
+
+<span>
+  <.button
+    link_type="live_patch"
+    to={~p"<%= schema.route_prefix %>/#{@<%= schema.singular %>}/edit"}
+    label="Edit"
+  /> | <.button link_type="live_redirect" to={~p"<%= schema.route_prefix %>"} label="Back" />
+</span>
